@@ -65,12 +65,12 @@
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
                        VerticalAlignment="Center"
-                       HorizontalAlignment="Right">P</TextBlock>
+                       HorizontalAlignment="Right">Salt</TextBlock>
             <TextBox Grid.Column="1" 
                      Margin="5"
                      VerticalAlignment="Center"
                      HorizontalAlignment="Stretch"
-                     Text="{Binding P, Mode=TwoWay}"></TextBox>
+                     Text="{Binding Salt, Mode=TwoWay}"></TextBox>
         </Grid>
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>

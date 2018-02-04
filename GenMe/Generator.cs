@@ -18,14 +18,14 @@ namespace GenMe
         private string _host;
         private string _login;
         private string _length;
-        private string _p;
+        private string _salt;
 
-        internal Generator(string host, string login, string length, string p)
+        internal Generator(string host, string login, string length, string salt)
         {
             this._host = host;
             this._login = login;
             this._length = length;
-            this._p = p;
+            this._salt = salt;
         }
 
         internal string Regenerate()
@@ -47,6 +47,8 @@ namespace GenMe
 
         private string Generate(string path)
         {
+            CreateRootDirIfNotExists();
+
             string dirName = System.IO.Path.GetDirectoryName(path);
             if (!System.IO.Directory.Exists(dirName))
             {
@@ -62,6 +64,15 @@ namespace GenMe
             int l = Convert.ToInt32(_length);
             string r = DecodeBytes(bytes);
             return Extract(r, l);
+        }
+
+        private void CreateRootDirIfNotExists()
+        {
+            string dir = GetRoot();
+            if (!System.IO.Directory.Exists(dir))
+            {
+                System.IO.Directory.CreateDirectory(dir);
+            }
         }
 
         private static string Hash2(string first, string second)
@@ -102,7 +113,7 @@ namespace GenMe
         private string DetectFileName()
         {
             string relativePath = Md5Str(_host) + "_" + Md5Str(_login) + "_" + Md5Str(_length) + "_"
-                + Md5Str(_p) + "_" + Hash2(_login, _p) + "_" + Hash2(_host, _length);
+                + Md5Str(_salt) + "_" + Hash2(_login, _salt) + "_" + Hash2(_host, _length);
 
             return System.IO.Path.Combine(GetRoot(), relativePath);
         }
@@ -128,8 +139,6 @@ namespace GenMe
             r.GetNonZeroBytes(result);
             return result;
         }
-
-
 
         private static string DecodeBytes(byte[] bytes)
         {

@@ -14,7 +14,7 @@ namespace GenMe
         private string _host;
         private string _login;
         private string _length;
-        private string _p;
+        private string _salt;
         private string _r;
 
         internal MainWindowViewModel()
@@ -75,16 +75,16 @@ namespace GenMe
             }
         }
 
-        public string P
+        public string Salt
         {
             get
             {
-                return _p;
+                return _salt;
             }
             set
             {
-                _p = value;
-                OnPropertyChanged("P");
+                _salt = value;
+                OnPropertyChanged("Salt");
             }
         }
 
@@ -109,7 +109,7 @@ namespace GenMe
                 return;
             }
 
-            var generator = new Generator(_host, _login, _length, _p);
+            var generator = new Generator(_host, _login, _length, _salt);
             R = generator.Generate();
         }
 
@@ -121,7 +121,7 @@ namespace GenMe
                 return;
             }
 
-            var generator = new Generator(_host, _login, _length, _p);
+            var generator = new Generator(_host, _login, _length, _salt);
             R = generator.Regenerate();
         }
  
@@ -139,7 +139,7 @@ namespace GenMe
             {
                 return false;
             }
-            if (string.IsNullOrEmpty(_p))
+            if (string.IsNullOrEmpty(_salt))
             {
                 return false;
             }
