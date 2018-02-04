@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Input;
 using MessageBox = System.Windows.MessageBox;
+using System.Windows.Controls;
 
 namespace GenMe
 {
@@ -14,13 +15,12 @@ namespace GenMe
         private string _host;
         private string _login;
         private string _length;
-        private string _salt;
         private string _r;
 
         internal MainWindowViewModel()
         {
-            GenerateCommand = new CommandImpl(Generate);
-            RegenerateCommand = new CommandImpl(Regenerate);
+            GenerateCommand = new CommandWithParamImpl(Generate);
+            RegenerateCommand = new CommandWithParamImpl(Regenerate);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -75,19 +75,6 @@ namespace GenMe
             }
         }
 
-        public string Salt
-        {
-            get
-            {
-                return _salt;
-            }
-            set
-            {
-                _salt = value;
-                OnPropertyChanged("Salt");
-            }
-        }
-
         public string R
         {
             get
@@ -101,7 +88,7 @@ namespace GenMe
             }
         }
 
-        private void Generate()
+        private void Generate(object param)
         {
             if (!CheckInput())
             {
@@ -109,11 +96,12 @@ namespace GenMe
                 return;
             }
 
-            var generator = new Generator(_host, _login, _length, _salt);
+            string salt = ExtractSalt(param);
+            var generator = new Generator(_host, _login, _length, salt);
             R = generator.Generate();
         }
 
-        private void Regenerate()
+        private void Regenerate(object param)
         {
             if (!CheckInput())
             {
@@ -121,8 +109,19 @@ namespace GenMe
                 return;
             }
 
-            var generator = new Generator(_host, _login, _length, _salt);
+            string salt = ExtractSalt(param);
+            var generator = new Generator(_host, _login, _length, salt);
             R = generator.Regenerate();
+        }
+
+        private string ExtractSalt(object param)
+        {
+            var passwordBox = param as PasswordBox;
+            if (passwordBox == null)
+            {
+                return String.Empty;
+            }
+            return passwordBox.Password;
         }
  
         private bool CheckInput()
@@ -136,10 +135,6 @@ namespace GenMe
                 return false;
             }
             if (string.IsNullOrEmpty(_length))
-            {
-                return false;
-            }
-            if (string.IsNullOrEmpty(_salt))
             {
                 return false;
             }

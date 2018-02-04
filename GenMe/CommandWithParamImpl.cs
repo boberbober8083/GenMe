@@ -3,11 +3,11 @@ using EventHandler = System.EventHandler;
 
 namespace GenMe
 {
-    public sealed class CommandImpl : ICommand
+    public sealed class CommandWithParamImpl : ICommand
     {
-        private readonly System.Action _action;
+        private readonly System.Action<object> _action;
 
-        public CommandImpl(System.Action action)
+        public CommandWithParamImpl(System.Action<object> action)
         {
             _action = action;
         }
@@ -19,7 +19,7 @@ namespace GenMe
 
         public void Execute(object parameter)
         {
-            _action.Invoke();
+            _action.Invoke(parameter);
         }
 
         public event EventHandler CanExecuteChanged;
