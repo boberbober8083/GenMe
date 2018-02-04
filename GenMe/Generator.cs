@@ -122,33 +122,11 @@ namespace GenMe
 
         byte[] GenerateLongRandomString()
         {
-            long dt = System.DateTime.UtcNow.ToFileTimeUtc();
-            int t1 = (int)(dt & uint.MaxValue);
-            int t2 = (int)(dt >> 32);
-
-            MemoryStream stream = new MemoryStream();
-
-            Random rnd1 = new Random(t1);
-            Random rnd2 = new Random(t2);
-            for (int i = 0; i < 64 * 1024; ++i)
-            {
-                byte[] byte1 = new byte[4];
-                rnd1.NextBytes(byte1);
-                foreach (var b in byte1)
-                {
-                    stream.WriteByte(b);
-                }
-
-                byte[] byte2 = new byte[4];
-                rnd2.NextBytes(byte2);
-                foreach (var b in byte2)
-                {
-                    stream.WriteByte(b);
-                }
-            }
-
-            stream.Flush();
-            return stream.ToArray();
+            byte[] result = new byte[64 * 1024 * 8];
+            RNGCryptoServiceProvider r =
+                new RNGCryptoServiceProvider();
+            r.GetNonZeroBytes(result);
+            return result;
         }
 
 
