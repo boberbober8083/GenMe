@@ -9,16 +9,16 @@ using MemoryStream = System.IO.MemoryStream;
 
 namespace GenMe
 {
-    internal sealed class Generator
+    internal class Generator
     {
-        private const string _alphabet1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private const string _alphabet2 = "_";
-        private const string _alphabet3 = "1234567890";
+        protected const string _alphabet1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        protected const string _alphabet2 = "_";
+        protected const string _alphabet3 = "1234567890";
 
-        private string _host;
-        private string _login;
-        private string _length;
-        private string _salt;
+        protected string _host;
+        protected string _login;
+        protected string _length;
+        protected string _salt;
 
         internal Generator(string host, string login, string length, string salt)
         {
@@ -75,12 +75,12 @@ namespace GenMe
             }
         }
 
-        private static string Hash2(string first, string second)
+        protected static string Hash2(string first, string second)
         {
             return Sha1Str(first + Sha1Str(first + second));
         }
 
-        private static string Md5Str(string input)
+        protected static string Md5Str(string input)
         {
             byte[] hash;
             using (var md5 = new MD5CryptoServiceProvider())
@@ -95,7 +95,7 @@ namespace GenMe
             return sb.ToString();
         }
 
-        private static string Sha1Str(string input)
+        protected static string Sha1Str(string input)
         {
             byte[] hash;
             using (var sha1 = new SHA1CryptoServiceProvider())
@@ -110,7 +110,7 @@ namespace GenMe
             return sb.ToString();
         }
 
-        private string DetectFileName()
+        virtual public string DetectFileName()
         {
             string relativePath = Md5Str(_host) + "_" + Md5Str(_login) + "_" + Md5Str(_length) + "_"
                 + Md5Str(_salt) + "_" + Hash2(_login, _salt) + "_" + Hash2(_host, _length);
@@ -118,7 +118,7 @@ namespace GenMe
             return System.IO.Path.Combine(GetRoot(), relativePath);
         }
 
-        private static string GetRoot()
+        protected static string GetRoot()
         {
             string exePath = System.Reflection.Assembly.GetEntryAssembly().Location;
             string myPath = ".mygen";
@@ -131,7 +131,7 @@ namespace GenMe
             System.IO.File.WriteAllBytes(path, GenerateLongRandomString());
         }
 
-        byte[] GenerateLongRandomString()
+        private byte[] GenerateLongRandomString()
         {
             byte[] result = new byte[64 * 1024 * 8];
             RNGCryptoServiceProvider r =
@@ -140,7 +140,7 @@ namespace GenMe
             return result;
         }
 
-        private static string DecodeBytes(byte[] bytes)
+        protected string DecodeBytes(byte[] bytes)
         {
             var totalAlphabet = _alphabet1 + _alphabet2 + _alphabet3;
             var sb = new StringBuilder();
@@ -183,6 +183,33 @@ namespace GenMe
                 }
             }
             return false;
+        }
+    }
+
+    internal class Generator2 : Generator
+    {
+        internal Generator2(string host, string login, string length, string salt)
+            : base(host, login, length, Sha1Str(salt))
+        {
+        }
+
+        public override string DetectFileName()
+        {
+            string relativePath = Sha1Str(_host + "_" + _login + "_" + _length + "_" + _salt) 
+                + "_" + Hash2(_login, _salt) + "_" + Hash2(_host, _length);
+            return System.IO.Path.Combine(GetRoot(), relativePath);
+        }
+
+        protected string DecodeBytes(byte[] bytes)
+        {
+            var totalAlphabet = _alphabet1 + _alphabet2 + _alphabet3 + _salt;
+            var sb = new StringBuilder();
+            foreach (var b in bytes)
+            {
+                char c = totalAlphabet[b % totalAlphabet.Length];
+                sb.Append(c);
+            }
+            return sb.ToString();
         }
     }
 }

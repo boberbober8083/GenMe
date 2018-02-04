@@ -16,6 +16,7 @@ namespace GenMe
         private string _login;
         private string _length;
         private string _r;
+        private bool _useLegacyGenerator = false;
 
         internal MainWindowViewModel()
         {
@@ -75,6 +76,16 @@ namespace GenMe
             }
         }
 
+        public bool UseLegacyGenerator
+        {
+            get { return _useLegacyGenerator; }
+            set
+            {
+                _useLegacyGenerator = value;
+                OnPropertyChanged("UseLegacyGenerator");
+            }
+        }
+
         public string R
         {
             get
@@ -97,7 +108,9 @@ namespace GenMe
             }
 
             string salt = ExtractSalt(param);
-            var generator = new Generator(_host, _login, _length, salt);
+            var generator = this.UseLegacyGenerator 
+                ? new Generator(_host, _login, _length, salt) 
+                : new Generator2(_host, _login, _length, salt);
             R = generator.Generate();
         }
 
@@ -110,7 +123,9 @@ namespace GenMe
             }
 
             string salt = ExtractSalt(param);
-            var generator = new Generator(_host, _login, _length, salt);
+            var generator = this.UseLegacyGenerator 
+                ? new Generator(_host, _login, _length, salt)
+                : new Generator2(_host, _login, _length, salt);
             R = generator.Regenerate();
         }
 
