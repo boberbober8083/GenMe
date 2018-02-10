@@ -78,15 +78,22 @@
                 <ColumnDefinition Width="Auto"
                                   MinWidth="75"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Right">R</TextBlock>
-            <TextBox Grid.Column="1" 
+            <PasswordBox  Grid.Column="1" 
                      Margin="5"
                      VerticalAlignment="Center"
                      HorizontalAlignment="Stretch"
-                     Text="{Binding R, Mode=TwoWay}"></TextBox>
+                     x:Name="ResultBox"/>
+            <Button Grid.Column="2" 
+                    Margin="0 5 5 5"
+                    MinWidth="50"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Command="{Binding CopyResultCommand}">Copy</Button>
         </Grid>
         <Grid Grid.Row="5">
             <CheckBox IsChecked="{Binding UseLegacyGenerator, Mode=TwoWay}"

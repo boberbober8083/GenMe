@@ -22,6 +22,7 @@ namespace GenMe
         {
             GenerateCommand = new CommandWithParamImpl(Generate);
             RegenerateCommand = new CommandWithParamImpl(Regenerate);
+            CopyResultCommand = new CommandImpl(CopyResult);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -36,6 +37,7 @@ namespace GenMe
 
         public ICommand GenerateCommand { get; set; }
         public ICommand RegenerateCommand { get; set; }
+        public ICommand CopyResultCommand { get; set; }
 
         public string Host
         {
@@ -107,7 +109,7 @@ namespace GenMe
                 return;
             }
 
-            string salt = ExtractSalt(param);
+            string salt = ExtractPassword(param);
             var generator = this.UseLegacyGenerator 
                 ? new Generator(_host, _login, _length, salt) 
                 : new Generator2(_host, _login, _length, salt);
@@ -122,14 +124,14 @@ namespace GenMe
                 return;
             }
 
-            string salt = ExtractSalt(param);
+            string salt = ExtractPassword(param);
             var generator = this.UseLegacyGenerator 
                 ? new Generator(_host, _login, _length, salt)
                 : new Generator2(_host, _login, _length, salt);
             R = generator.Regenerate();
-        }
+        }      
 
-        private string ExtractSalt(object param)
+        private string ExtractPassword(object param)
         {
             var passwordBox = param as PasswordBox;
             if (passwordBox == null)
@@ -137,6 +139,14 @@ namespace GenMe
                 return String.Empty;
             }
             return passwordBox.Password;
+        }
+
+        private void CopyResult()
+        {
+            if (!String.IsNullOrEmpty(R))
+            {
+                System.Windows.Clipboard.SetText(R);
+            }            
         }
  
         private bool CheckInput()

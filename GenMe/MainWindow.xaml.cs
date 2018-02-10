@@ -26,6 +26,7 @@ namespace GenMe
         {
             InitializeComponent();
             DataContext = _vm;
+            ResultBox.Password = "***************************************";
         }
 
         private void MainWindow_Close(object sender, RoutedEventArgs e)
