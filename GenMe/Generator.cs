@@ -128,10 +128,10 @@ namespace GenMe
 
         private void GenerateNewData(string path)
         {
-            System.IO.File.WriteAllBytes(path, GenerateLongRandomString());
+            System.IO.File.WriteAllBytes(path, GenerateRandomBuffer());
         }
 
-        private byte[] GenerateLongRandomString()
+        private static byte[] GenerateRandomBuffer()
         {
             byte[] result = new byte[64 * 1024 * 8];
             RNGCryptoServiceProvider r =
