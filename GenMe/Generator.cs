@@ -68,7 +68,7 @@ namespace GenMe
 
         private void CreateRootDirIfNotExists()
         {
-            string dir = GetRoot();
+            string dir = GetRootDir();
             if (!System.IO.Directory.Exists(dir))
             {
                 System.IO.Directory.CreateDirectory(dir);
@@ -115,10 +115,10 @@ namespace GenMe
             string relativePath = Md5Str(_host) + "_" + Md5Str(_login) + "_" + Md5Str(_length) + "_"
                 + Md5Str(_salt) + "_" + Hash2(_login, _salt) + "_" + Hash2(_host, _length);
 
-            return System.IO.Path.Combine(GetRoot(), relativePath);
+            return System.IO.Path.Combine(GetRootDir(), relativePath);
         }
 
-        protected static string GetRoot()
+        protected static string GetRootDir()
         {
             string exePath = System.Reflection.Assembly.GetEntryAssembly().Location;
             string myPath = ".mygen";
@@ -140,7 +140,7 @@ namespace GenMe
             return result;
         }
 
-        protected string DecodeBytes(byte[] bytes)
+        virtual protected string DecodeBytes(byte[] bytes)
         {
             var totalAlphabet = _alphabet1 + _alphabet2 + _alphabet3;
             var sb = new StringBuilder();
@@ -197,10 +197,10 @@ namespace GenMe
         {
             string relativePath = Sha1Str(_host + "_" + _login + "_" + _length + "_" + _salt) 
                 + "_" + Hash2(_login, _salt) + "_" + Hash2(_host, _length);
-            return System.IO.Path.Combine(GetRoot(), relativePath);
+            return System.IO.Path.Combine(GetRootDir(), relativePath);
         }
 
-        protected string DecodeBytes(byte[] bytes)
+        override protected string DecodeBytes(byte[] bytes)
         {
             var totalAlphabet = _alphabet1 + _alphabet2 + _alphabet3 + _salt;
             var sb = new StringBuilder();
